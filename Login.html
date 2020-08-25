@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <!-- CSS only -->
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+      integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z"
+      crossorigin="anonymous"
+    />
+    <style>
+      .formLogin {
+        max-width: 400px;
+      }
+      html,
+      body {
+        height: 100%;
+        text-align: center;
+      }
+      body {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app">
+      <div
+        class="container d-flex flex-column align-items-center justify-content-center"
+      >
+        <h1 class="text-center h2 mb-3">請先登入</h1>
+        <form action="#" class="formLogin d-flex flex-column">
+          <input
+            class="form-control mb-3"
+            type="email"
+            name=""
+            id="email"
+            placeholder="Email address"
+            v-model="user.email"
+          />
+          <input
+            class="form-control mb-3"
+            type="password"
+            name=""
+            id="password"
+            placeholder="Password"
+            v-model="user.password"
+          />
+          <button class="btn btn-primary" @click="login();">登入</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- JS, Popper.js, and jQuery -->
+    <script
+      src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+      integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"
+      integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"
+      integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV"
+      crossorigin="anonymous"
+    ></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script>
+      var app = new Vue({
+        el: "#app",
+        data: {
+          user: {
+            email: "",
+            password: "",
+          },
+        },
+        methods: {
+          login() {
+            axios
+              .post(
+                "https://course-ec-api.hexschool.io/api/auth/login",
+                this.user
+              )
+              .then((response) => {
+                document.cookie = `userToken=${
+                  response.data.token
+                }; expires=${new Date(response.data.expired * 1000)}; path=/`;
+                if (response.data.success) {
+                  window.location = "index.html";
+                } else {
+                  alert("請檢察帳號密碼");
+                }
+              })
+              .catch((err) => {
+                console.log(err);
+                alert(err.message);
+              });
+          },
+          logout() {
+            const userToken = document.cookie.replace(
+              /(?:(?:^|.*;\s*)userToken\s*\=\s*([^;]*).*$)|^.*$/,
+              "$1"
+            );
+            axios
+              .post(
+                "https://course-ec-api.hexschool.io/api/auth/logout",
+                userToken.token
+              )
+              .then((response) => {});
+          },
+        },
+      });
+    </script>
+  </body>
+</html>
